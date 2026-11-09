@@ -28,7 +28,22 @@ namespace RaceDayMVC.Models
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
     }
 }
-            
+    namespace RaceDayMVC.Models
+{
+    public class EventCategoryViewModel
+    {
+       
+            public int EventCategoryId { get; set; }
+            public string CategoryName { get; set; }
+            public decimal DistanceKm { get; set; }
+            public decimal EntryFee { get; set; }
+            public int Capacity { get; set; }
+            public int EntriesCount { get; set; }
+
+           
+            public bool IsFull => EntriesCount >= Capacity;
+        }
+    }        
 
             
             public string PaymentStatus { get; set; }
