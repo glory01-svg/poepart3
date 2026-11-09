@@ -379,6 +379,57 @@ namespace RaceDayMVC.MVC_controllers
             }
         }
     }
+    using Microsoft.AspNetCore.Mvc;
+using RaceDayMVC.SERVICES;
+
+namespace RaceDayMVC.MVC_controllers
+{
+    public class RaceDayMVCController : Controller
+    {
+        private static ApiService apiService;
+        private readonly ApiService _apiService = apiService;
+
+            [HttpGet]
+            public IActionResult Login() => View();
+
+            [HttpPost]
+            public async Task<IActionResult> Login(string email, string password, string role)
+            {
+                var loginData = new { Email = email, Password = password, Role = role };
+                var response = await _apiService.PostAsync("api/auth/login", loginData);
+
+                if (response.IsSuccessStatusCode)
+                {
+
+                    if (response.Headers.TryGetValues("Set-Cookie", out var cookies))
+                    {
+                        HttpContext.Session.SetString("ApiAuthCookie", cookies.FirstOrDefault() ?? "");
+                    }
+
+
+                    HttpContext.Session.SetString("UserRole", role);
+                    HttpContext.Session.SetString("UserEmail", email);
+
+                    if (role == "Organiser") return RedirectToAction("Dashboard", "Organiser");
+                    return RedirectToAction("Index", "Participant");
+                }
+
+                ViewBag.Error = "Invalid login attempt.";
+                return View();
+            }
+
+            public IActionResult Logout()
+            {
+                HttpContext.Session.Clear();
+                return RedirectToAction("Index", "Home");
+            }
+        }
+}
+       
+      
+      
+
+
     
 
 
