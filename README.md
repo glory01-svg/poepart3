@@ -18,6 +18,16 @@ namespace RaceDayMVC.Models
             public string UserFullName { get; set; }
             public string UserEmail { get; set; }
 
+
+namespace RaceDayMVC.Models
+{
+    public class ErrorViewModel
+    {
+        public string? RequestId { get; set; }
+
+        public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+    }
+}
             
 
             
