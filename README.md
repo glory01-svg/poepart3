@@ -114,7 +114,79 @@ namespace RaceDayMVC.Models
             public int TotalFinishers { get; set; }
         }
     }
-    
+    using System.ComponentModel.DataAnnotations;
+
+namespace RaceDayMVC.Models
+{
+    public class UserViewModel
+    {
+      
+            public int UserId { get; set; }
+
+            [Required]
+            [Display(Name = "Full Name")]
+            public string FullName { get; set; }
+
+            [Required]
+            [EmailAddress]
+            public string Email { get; set; }
+
+            [Required]
+            public string Phone { get; set; }
+
+            [Display(Name = "Date of Birth")]
+            [DataType(DataType.Date)]
+            public DateTime DateOfBirth { get; set; }
+
+            [Display(Name = "Emergency Contact")]
+            public string EmergencyContact { get; set; }
+
+            [Display(Name = "Emergency Phone")]
+            public string EmergencyPhone { get; set; }
+
+            
+            public string? ProfilePicUrl { get; set; }
+        }
+    }
+
+
+using System.ComponentModel.DataAnnotations;
+
+namespace RaceDayMVC.Models
+{
+    public class UserViewModel
+    {
+      
+            public int UserId { get; set; }
+
+            [Required]
+            [Display(Name = "Full Name")]
+            public string FullName { get; set; }
+
+            [Required]
+            [EmailAddress]
+            public string Email { get; set; }
+
+            [Required]
+            public string Phone { get; set; }
+
+            [Display(Name = "Date of Birth")]
+            [DataType(DataType.Date)]
+            public DateTime DateOfBirth { get; set; }
+
+            [Display(Name = "Emergency Contact")]
+            public string EmergencyContact { get; set; }
+
+            [Display(Name = "Emergency Phone")]
+            public string EmergencyPhone { get; set; }
+
+            
+            public string? ProfilePicUrl { get; set; }
+        }
+    }
+
+
+
     
             
             public string PaymentStatus { get; set; }
