@@ -44,6 +44,39 @@ namespace RaceDayMVC.Models
             public bool IsFull => EntriesCount >= Capacity;
         }
     }        
+using System.ComponentModel.DataAnnotations;
+
+namespace RaceDayMVC.Models
+{
+    
+        public class EventViewModel
+        {
+            public int EventId { get; set; }
+
+            [Required]
+            [Display(Name = "Event Name")]
+            public string EventName { get; set; }
+
+            [Required]
+            [Display(Name = "Date")]
+            [DataType(DataType.Date)]
+            public DateTime EventDate { get; set; }
+
+            [Required]
+            public string City { get; set; }
+
+            [Required]
+            public string Province { get; set; }
+
+            public string Description { get; set; }
+
+            [Display(Name = "Banner Image")]
+            public string BannerImageUrl { get; set; }
+
+            
+            public List<EventCategoryViewModel> EventCategories { get; set; } = new List<EventCategoryViewModel>();
+        }
+    }
 
             
             public string PaymentStatus { get; set; }
