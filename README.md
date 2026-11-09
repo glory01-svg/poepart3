@@ -19,6 +19,8 @@ namespace RaceDayMVC.Models
             public string UserEmail { get; set; }
 
             
+
+            
             public string PaymentStatus { get; set; }
             public string EntryStatus { get; set; }
         }
