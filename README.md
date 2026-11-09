@@ -77,7 +77,26 @@ namespace RaceDayMVC.Models
             public List<EventCategoryViewModel> EventCategories { get; set; } = new List<EventCategoryViewModel>();
         }
     }
+using System.ComponentModel.DataAnnotations;
 
+namespace RaceDayMVC.Models
+{
+    public class LoginViewModel
+    {
+        
+            [Required]
+            [EmailAddress]
+            public string Email { get; set; }
+
+            [Required]
+            [DataType(DataType.Password)]
+            public string Password { get; set; }
+
+            [Required]
+            public string Role { get; set; } 
+        }
+    }
+    
             
             public string PaymentStatus { get; set; }
             public string EntryStatus { get; set; }
