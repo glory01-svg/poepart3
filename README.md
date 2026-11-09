@@ -439,4 +439,64 @@ namespace RaceDayMVC.MVC_controllers
             public string EntryStatus { get; set; }
         }
     }
+using System.Text;
+using System.Text.Json;
 
+namespace RaceDayMVC.SERVICES
+{
+    public class ApiService
+    {
+        private readonly HttpClient _httpClient;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public ApiService(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+        {
+            _httpClient = httpClient;
+            _httpContextAccessor = httpContextAccessor;
+
+            
+            _httpClient.BaseAddress = new Uri("https://localhost:7123/");
+        }
+
+        
+        private void AttachAuthCookie()
+        {
+            var sessionCookie = _httpContextAccessor.HttpContext?.Session.GetString("ApiAuthCookie");
+            if (!string.IsNullOrEmpty(sessionCookie))
+            {
+                _httpClient.DefaultRequestHeaders.Add("Cookie", sessionCookie);
+            }
+        }
+
+       
+        public async Task<T> GetAsync<T>(string endpoint)
+        {
+            AttachAuthCookie();
+            var response = await _httpClient.GetAsync(endpoint);
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<T>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+            return default;
+        }
+
+        
+        public async Task<HttpResponseMessage> PostAsync<T>(string endpoint, T data)
+        {
+            AttachAuthCookie();
+            var json = JsonSerializer.Serialize(data);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            return await _httpClient.PostAsync(endpoint, content);
+        }
+
+        
+        public async Task<HttpResponseMessage> PutAsync<T>(string endpoint, T data)
+        {
+            AttachAuthCookie();
+            var json = JsonSerializer.Serialize(data);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            return await _httpClient.PutAsync(endpoint, content);
+        }
+    }
+}
