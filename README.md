@@ -96,6 +96,25 @@ namespace RaceDayMVC.Models
             public string Role { get; set; } 
         }
     }
+    namespace RaceDayMVC.Models
+{
+    public class ResultViewModel
+    {
+      
+            public string EventName { get; set; }
+            public DateTime EventDate { get; set; }
+            public string Category { get; set; }
+
+           
+            public string TimeFormatted { get; set; }
+
+            public int Position { get; set; }
+
+            
+            public int TotalFinishers { get; set; }
+        }
+    }
+    
     
             
             public string PaymentStatus { get; set; }
