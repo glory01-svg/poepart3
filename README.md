@@ -208,7 +208,178 @@ namespace RaceDayMVC.MVC_controllers
         public object EventCategoryId { get; internal set; }
     }
 }
+using Microsoft.AspNetCore.Mvc;
+using RaceDayMVC.Models;
+using RaceDayMVC.SERVICES;
 
+namespace RaceDayMVC.MVC_controllers
+{
+    public class OrganiserController : Controller
+    {
+       
+            private readonly ApiService _apiService;
+
+            public OrganiserController(ApiService apiService)
+            {
+                _apiService = apiService;
+            }
+
+           
+            public async Task<IActionResult> Dashboard()
+            {
+                if (HttpContext.Session.GetString("UserRole") != "Organiser") return RedirectToAction("Login", "Account");
+
+                var events = await _apiService.GetAsync<List<EventViewModel>>("api/events");
+                return View(events);
+            }
+
+            
+            [HttpGet]
+            public IActionResult CreateEvent() => View();
+
+            [HttpPost]
+            public async Task<IActionResult> CreateEvent(EventViewModel model, IFormFile bannerImage)
+            {
+                
+                model.BannerImageUrl = "https://via.placeholder.com/800x400";
+
+                var response = await _apiService.PostAsync("api/events", model);
+                if (response.IsSuccessStatusCode) return RedirectToAction("Dashboard");
+
+                return View(model);
+            }
+
+          
+            public async Task<IActionResult> Enrollments(int eventId)
+            {
+                var enrollments = await _apiService.GetAsync<List<EnrollmentViewModel>>($"api/enrollments/event/{eventId}");
+                return View(enrollments);
+            }
+
+           
+            [HttpPost]
+            public async Task<IActionResult> CaptureResult(int entryId, int timeSeconds, int position)
+            {
+                var resultData = new { EntryId = entryId, TimeSeconds = timeSeconds, Position = position };
+                await _apiService.PostAsync("api/results/capture", resultData);
+                return RedirectToAction("Enrollments");
+            }
+        }
+    }
+
+   using Microsoft.AspNetCore.Mvc;
+using RaceDayMVC.Models;
+using RaceDayMVC.SERVICES;
+
+namespace RaceDayMVC.MVC_controllers
+{
+ 
+        public class ParticipantController : Controller
+        {
+            private readonly ApiService _apiService;
+
+            public ParticipantController(ApiService apiService)
+            {
+                _apiService = apiService;
+            }
+
+           
+            private bool IsParticipant() => HttpContext.Session.GetString("UserRole") == "Participant";
+
+           
+            public async Task<IActionResult> Index(string searchString)
+            {
+                var events = await _apiService.GetAsync<List<EventViewModel>>("api/events");
+
+                if (!string.IsNullOrEmpty(searchString))
+                {
+                    events = events?.Where(e => e.EventName.Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList();
+                }
+
+                return View(events ?? new List<EventViewModel>());
+            }
+
+            
+            public async Task<IActionResult> EventDetails(int id)
+            {
+                if (!IsParticipant()) return RedirectToAction("Login", "Account");
+
+                var eventDetails = await _apiService.GetAsync<EventViewModel>($"api/events/{id}");
+                if (eventDetails == null) return NotFound();
+
+                return View(eventDetails);
+            }
+
+           
+            [HttpPost]
+            public async Task<IActionResult> Enroll(EnrollViewModel model)
+            {
+                if (!IsParticipant()) return RedirectToAction("Login", "Account");
+
+                var response = await _apiService.PostAsync("api/enrollments", model);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Successfully enrolled in the event!";
+                    return RedirectToAction("MyEnrollments");
+                }
+
+                TempData["Error"] = "Failed to enroll. Category may be full.";
+                return RedirectToAction("EventDetails", new { id = model.EventCategoryId }); 
+            }
+
+            
+            public async Task<IActionResult> MyEnrollments()
+            {
+                if (!IsParticipant()) return RedirectToAction("Login", "Account");
+
+                var myEntries = await _apiService.GetAsync<List<EnrollmentViewModel>>("api/enrollments/my-entries");
+                return View(myEntries ?? new List<EnrollmentViewModel>());
+            }
+
+            
+            public async Task<IActionResult> MyResults()
+            {
+                if (!IsParticipant()) return RedirectToAction("Login", "Account");
+
+                var results = await _apiService.GetAsync<List<ResultViewModel>>("api/results/my-results");
+                return View(results ?? new List<ResultViewModel>());
+            }
+
+           
+            [HttpGet]
+            public async Task<IActionResult> Profile()
+            {
+                if (!IsParticipant()) return RedirectToAction("Login", "Account");
+
+                var userProfile = await _apiService.GetAsync<UserViewModel>("api/users/profile");
+                if (userProfile == null) return NotFound();
+
+                return View(userProfile);
+            }
+
+           
+            [HttpPost]
+            public async Task<IActionResult> Profile(UserViewModel model)
+            {
+                if (!IsParticipant()) return RedirectToAction("Login", "Account");
+
+                if (!ModelState.IsValid) return View(model);
+
+                var response = await _apiService.PutAsync("api/users/profile", model);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Success"] = "Profile updated successfully.";
+                    return RedirectToAction("Profile");
+                }
+
+                TempData["Error"] = "Failed to update profile.";
+                return View(model);
+            }
+        }
+    }
+    
 
 
     
