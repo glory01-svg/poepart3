@@ -184,6 +184,30 @@ namespace RaceDayMVC.Models
             public string? ProfilePicUrl { get; set; }
         }
     }
+namespace RaceDayMVC.MVC_controllers
+{
+    public class EnrollViewModel
+    {
+        public int EntryId { get; set; }
+        public int RaceNumber { get; set; }
+
+
+        public string EventName { get; set; }
+        public DateTime EventDate { get; set; }
+
+
+        public string CategoryName { get; set; }
+
+
+        public string UserFullName { get; set; }
+        public string UserEmail { get; set; }
+
+
+        public string PaymentStatus { get; set; }
+        public string EntryStatus { get; set; }
+        public object EventCategoryId { get; internal set; }
+    }
+}
 
 
 
